@@ -1,39 +1,33 @@
 ﻿namespace FemurBreakerTertingVersion
 {
-    using Exiled.API.Features;
     using Merr = ProjectMER.Events.Handlers.Schematic;
-    using ExiledhandlerS = Exiled.Events.Handlers.Server;
-    using System.IO;
-    using FemurBreaker;
     using System;
+    using LabApi.Loader.Features.Plugins;
+    using LabApi.Features;
 
-    public class Plugin : Plugin<Config, Translations>
+    public class Plugin : Plugin<Config>
     {
         public override string Name => "FemurBreaker";
         public override string Author => "davilone32";
         public override Version Version => new Version(1, 4, 2);
 
-        private EventHandlers Handlers;
-        public readonly string AudioPath = Path.Combine(Paths.Plugins, "audio");
-        public override void OnEnabled()
-        {
+        public override string Description => "femurBreaker";
 
-            if (!Directory.Exists(AudioPath))
-            {
-                Directory.CreateDirectory(AudioPath);
-            }
+        public override Version RequiredApiVersion => LabApiProperties.CurrentVersion;
+
+        private EventHandlers Handlers;
+        public override void Enable()
+        {
 
             Handlers = new EventHandlers(this);
-            ExiledhandlerS.RoundEnded += Handlers.OnRestart;
+            LabApi.Events.Handlers.ServerEvents.RoundEnded += Handlers.OnRestart;
             Merr.ButtonInteracted += Handlers.OnTrap;
-            base.OnEnabled();
         }
-        public override void OnDisabled()
+        public override void Disable()
         {
-            ExiledhandlerS.RoundEnded -= Handlers.OnRestart;
+            LabApi.Events.Handlers.ServerEvents.RoundEnded -= Handlers.OnRestart;
             Merr.ButtonInteracted -= Handlers.OnTrap;
             Handlers = null;
-            base.OnDisabled();
         }
     }
 }

@@ -8,14 +8,17 @@
     <Platforms>AnyCPU;ARM64</Platforms>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="ExMod.Exiled" Version="9.8.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Northwood.LabAPI" Version="1.1.5" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>D:\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="AudioPlayer">
       <HintPath>..\Thirdparty\Other\AudioPlayer.dll</HintPath>
@@ -32,14 +35,8 @@
     <Reference Include="NVorbis">
       <HintPath>..\Thirdparty\Other\NVorbis.dll</HintPath>
     </Reference>
-    <Reference Include="PluginAPI">
-      <HintPath>..\Thirdparty\SCPSL\PluginAPI.dll</HintPath>
-    </Reference>
     <Reference Include="ProjectMER">
       <HintPath>..\Thirdparty\Other\ProjectMER.dll</HintPath>
-    </Reference>
-    <Reference Include="SCPSLAudioApi">
-      <HintPath>..\Thirdparty\Other\SCPSLAudioApi.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\Thirdparty\UnityEngine\UnityEngine.CoreModule.dll</HintPath>

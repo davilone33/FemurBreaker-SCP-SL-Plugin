@@ -1,15 +1,10 @@
-﻿using AudioPlayer.API;
-using AudioPlayer.API.Container;
-using Exiled.API.Enums;
-using Exiled.API.Features;
-using Exiled.Events.EventArgs.Server;
-using MEC;
+﻿using LabApi.Events.Arguments.ServerEvents;
+using LabApi.Features.Wrappers;
 using PlayerRoles;
 using ProjectMER.Events.Arguments;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Player = Exiled.API.Features.Player;
+using Player = LabApi.Features.Wrappers.Player;
 using Random = UnityEngine.Random;
 
 namespace FemurBreakerTertingVersion
@@ -32,10 +27,10 @@ namespace FemurBreakerTertingVersion
                     HandleSecondInteraction(ev.Player);
                     break;
                 case 3:
-                    ev.Player.SendBroadcast(plugin.Translation.OnRecontainmentRepeat, 4);
+                    ev.Player.SendBroadcast(plugin.Config.OnRecontainmentRepeat, 4);
                     break;
                 default:
-                    ev.Player.SendBroadcast(plugin.Translation.OnRequirements, 4);
+                    ev.Player.SendBroadcast(plugin.Config.OnRequirements, 4);
                     break;
             }
         }
@@ -45,11 +40,11 @@ namespace FemurBreakerTertingVersion
             playerAlive = 1;
             if (plugin.Config.CassieWithSacrificie)
             {
-                player.Kill(plugin.Translation.OnSacrificeDeathReason, plugin.Config.CassieAnounceWhitPlayerDead);
+                player.Kill(plugin.Config.OnSacrificeDeathReason, plugin.Config.CassieAnounceWhitPlayerDead);
             }
             else
             {
-                player.Kill(plugin.Translation.OnSacrificeDeathReason);
+                player.Kill(plugin.Config.OnSacrificeDeathReason);
             }
         }
 
@@ -59,10 +54,10 @@ namespace FemurBreakerTertingVersion
 
             if (plugin.Config.UseGenerators)
             {
-                int activeGenerators = Generator.Get(GeneratorState.Activating).Count();
+                int activeGenerators = Generator.List.Where(p => p.Activating).Count();
                 if (activeGenerators != plugin.Config.Generators)
                 {
-                    player.Broadcast(4, $"{plugin.Config.TextGenerators}{activeGenerators} / {plugin.Config.Generators}");
+                    player.SendBroadcast($"{plugin.Config.TextGenerators}{activeGenerators} / {plugin.Config.Generators}", 4);
                     return;
                 }
             }
@@ -70,12 +65,12 @@ namespace FemurBreakerTertingVersion
             if (!success)
             {
                 playerAlive = 0;
-                player.Broadcast(4, plugin.Translation.OnFailure);
+                player.SendBroadcast(plugin.Config.OnFailure, 4);
             }
             else
             {
                 playerAlive = 3;
-                player.Broadcast(4, plugin.Translation.OnDeath);
+                player.SendBroadcast(plugin.Config.OnDeath, 4);
                 AffectScp106();
                 Extension(plugin.Config.npc);
             }
@@ -86,10 +81,7 @@ namespace FemurBreakerTertingVersion
             List<Player> scp106 = Player.List.Where(p => p.Role == RoleTypeId.Scp106).ToList();
             foreach (Player p in scp106)
             {
-                if (plugin.Config.UseGenerators)
-                    p.Hurt(9999, DamageType.FemurBreaker);
-                else
-                    p.Kill(plugin.Config.OnRecontainmentDeath);
+                p.Kill();
             }
         }
 
@@ -97,34 +89,10 @@ namespace FemurBreakerTertingVersion
         {
             if (!plugin.Config.SoundOrNotsound)
             {
-                Cassie.Message(plugin.Translation.Cassie);
+                Announcer.Message(plugin.Config.Cassie, plugin.Config.Cassie, true, 1, 0);
+                //Cassie.Message();
                 return;
             }
-
-            if (!YT) return;
-
-            PlayAudioBot(plugin.Config.FileAudioName, plugin.Config.OnNameBot, plugin.Config.BotBadgetName, plugin.Config.BadgetBotColor, plugin.Config.seconds);
-        }
-
-        private void PlayAudioBot(string fileName, string botName, string badgeText, string badgeColor, float duration)
-        {
-            string path = Path.Combine(Paths.Plugins, "Audio", fileName + ".ogg");
-
-            var npc = AudioPlayerBot.SpawnDummy(
-                name: botName,
-                id: 99,
-                badgeText: badgeText,
-                bagdeColor: badgeColor
-            );
-
-            npc.Player.ReferenceHub.roleManager.ServerSetRole(RoleTypeId.Overwatch, RoleChangeReason.Died);
-
-            var audio = npc.AudioPlayerBase;
-            audio.BroadcastChannel = VoiceChat.VoiceChatChannel.Intercom;
-            audio.AudioToPlay.Add(path);
-            audio.Play(0);
-
-            Timing.CallDelayed(duration, () => AudioController.DisconnectDummy(npc.ID));
         }
 
         public void OnRestart(RoundEndedEventArgs ev)
